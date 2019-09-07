@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import sys
+import numpy as np
 
 class Square:
     def __init__(self):
@@ -24,31 +26,48 @@ class Square:
 
 
 class Board:
-    def __init__(self, size=4):
-        self.board = [[Square() for _ in range(size)] for _ in range(size)]
+    def __init__(self, size=8):
         self.SIZE = size
+        self.board = np.zeros((self.SIZE, self.SIZE), dtype=int)
 
+    #Flip board upside down for printing so we aren't like breaking gravity
+    #Plz dont touch this it works perfectly
     def printBoard(self):
-        
-        print(*[idx for idx in range(self.SIZE)], sep="\t")
-        print()
-        for row in self.board[::-1]:
-            for item in row:
-                print(item, end="\t")
-            print()
-    
+
+        #Indent by 1 tab length
+        print("\t", end="")
+
+        #Print the column numbers as a header
+        print(*[x for x in range(self.SIZE)], sep="\t", end="\n")
+
+        #Indent by 1 tab length
+        print("\t", end="")
+
+        #Print a row of dashes for separation
+        print("-" * (self.SIZE * 7+2))
+
+        for rowidx, row in enumerate(np.flipud(self.board)):
+            print("{}|\t".format(rowidx), end="")
+            for tile in row:
+                print(tile, end="\t")
+            print("\n |")
+
     #Get the location of the top empty space
     def getTop(self, idx):
-        for idx, row in enumerate(self.board):
-            if row[idx].isEmpty():
-                return idx
+        
+        #Get column as a numpy array
+        col = self.board.T[idx]
+        r =  np.nonzero(col)[0]-1 if np.any(col) else 0
+        print("getTop Value: -->{}<--".format(r))
+        return r
 
-    def dropTile(self, idx, player='R'):
+    def dropTile(self, idx, player='1'):
         #If column is full, return false
-        if self.getTop(idx) == self.SIZE:
+        if np.all(self.board.T[idx]):
             return False
+
         else:
-            self.board[self.getTop(idx)][idx].setVal(player)
+            self.board[self.getTop(idx)+1, idx] = player
             return True
             
         
