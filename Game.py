@@ -10,12 +10,40 @@ class Game:
 
         self.players = [Player(i) for i in list(range(numPlayers))]
         self.board = Board(goal=goal, N=N, M=M)
+        self.won = False
+
+    def checkWon(self, player):
+        print("checking")
+
+    def pickLocation(self, player):
+        locations = []
+        for i, N in enumerate(self.board.topShape):
+            while True:
+                try:
+                    location = int(input("On axis {0}, where? ".format(i)))
+                except (ValueError, TypeError):
+                    print("Must be an integer")
+                    continue
+                if location > N or location <= 0:
+                    print("Must be between 0 and {0}".format(N))
+                    continue
+                locations.append(location)
+                break
+
+        self.board.drop(locations, player)
+
+    def run(self):
+        while not self.won:
+            for player in self.players:
+                self.pickLocation(player)
+                self.board.draw()
+                self.checkWon(player)
 
 
 class Player:
 
     def __init__(self, playerNum):
-        playerDict = {0: "X", 1: "O", 2: "$", 3: "&"}
+        playerDict = {0: -1, 1: 1}
 
         self.playerNum = playerNum
         self.playerIcon = playerDict[
@@ -27,19 +55,41 @@ class Board:
     def __init__(self, goal=4, N=8, M=2):
 
         # M-Dimensional cube shape
-        self.shape = (N,) * M
+        self.mainShape = (N,) * M
 
-        # Initialize M-Dimensional matrix, column-major order
-        self.MainBoard = np.zeros(self.shape, dtype=np.int8, order="F")
+        self.topShape = (N,) * (M - 1)
 
-    def drop(loc, player):
-        raise NotImplemented("Still working on this. <3")
+        # Initialize M-Dimensional matrix
+        self.mainBoard = np.zeros(
+            self.mainShape, dtype=np.int8)
+        # Initialize M-1 Dimensional matrix for keeping track of placed pieces
+        self.topBoard = np.full(self.topShape, N - 1, dtype=int)
+
+    def drop(self, loc, player):
+        check = int(self.topBoard[loc])
+        print(check)
+        if check != 0:
+            loc.insert(0, check)
+            print(loc)
+            np.put(self.mainBoard, loc, player.playerIcon)
+            check -= 1
+            print("Dropping!")
+        else:
+            print("Try again")
+            raise OverflowError(
+                "Haha, not memory overflow, just no free space here.")
+
+        # raise NotImplemented("Still working on this. <3")
+
+    def draw(self):
+        print(self.mainBoard)
+        # raise NotImplemented("Still working on this. <3")
 
 
 def setup(CLI=True):
 
     if not CLI:
-        return Game(numPlayers=2, goal=4, N=10, M=10)
+        return Game(numPlayers=2, goal=4, N=8, M=2)
 
     while True:
         try:
@@ -91,9 +141,11 @@ def setup(CLI=True):
 
 if __name__ == "__main__":
 
-    game = setup()
+    game = setup(CLI=False)
 
-    print(game.board.MainBoard)
+    print(game.board.mainBoard)
+
+    game.run()
 
     # class Square:
     #     def __init__(self):
