@@ -24,7 +24,7 @@ class Game:
                 except (ValueError, TypeError):
                     print("Must be an integer")
                     continue
-                if location > N or location <= 0:
+                if location >=N  or location < 0:
                     print("Must be between 0 and {0}".format(N))
                     continue
                 locations.append(location)
