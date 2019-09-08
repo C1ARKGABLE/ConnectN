@@ -4,6 +4,24 @@
 import numpy as np
 
 
+class Game:
+
+    def __init__(self, numPlayers=2, goal=4, N=8, M=2):
+
+        self.players = [Player(i) for i in list(range(numPlayers))]
+        self.board = Board(goal=goal, N=N, M=M)
+
+
+class Player:
+
+    def __init__(self, playerNum):
+        playerDict = {0: "X", 1: "O", 2: "$", 3: "&"}
+
+        self.playerNum = playerNum
+        self.playerIcon = playerDict[
+            playerNum] if playerNum in playerDict.keys() else playerNum
+
+
 class Board:
 
     def __init__(self, goal=4, N=8, M=2):
@@ -11,22 +29,78 @@ class Board:
         # M-Dimensional cube shape
         self.shape = (N,) * M
 
-        # Initialize M-Dimensional matrix
-        self.MainBoard = np.full(self.shape, None, dtype=object)
+        # Initialize M-Dimensional matrix, column-major order
+        self.MainBoard = np.zeros(self.shape, dtype=np.int8, order="F")
+
+    def drop(loc, player):
+        raise NotImplemented("Still working on this. <3")
 
 
-if __name__ == '__main__':
+def setup(CLI=True):
 
-    b = Board(N=2, M=4)
+    if not CLI:
+        return Game(numPlayers=2, goal=4, N=10, M=10)
 
-    print(b.MainBoard)
+    while True:
+        try:
+            players = int(input("How many players?\n"))
+        except ValueError:
+            print("Invalid input")
+            continue
+        if players <= 1:
+            print("Invalid input")
+            continue
+        break
+
+    while True:
+        try:
+            n = int(input("Input the size?\n"))
+        except ValueError:
+            print("Invalid input")
+            continue
+        if n <= 1:
+            print("Invalid input")
+            continue
+        break
+
+    while True:
+        try:
+            m = int(input("Input the number of dimensions?\n"))
+        except ValueError:
+            print("Invalid input")
+            continue
+        if m <= 1 or m > 32:
+            print("Value must be between 1 and 33")
+            continue
+        break
+
+    while True:
+        try:
+            goal = int(input("How many in a row to win?\n"))
+        except ValueError:
+            print("Invalid input")
+            continue
+        if goal <= 1 or goal > n:
+            print("Value must be between 1 and N ({0})".format(n))
+            continue
+        break
+
+    game = Game(numPlayers=players, goal=goal, N=n, M=m)
+
+    return game
+
+if __name__ == "__main__":
+
+    game = setup()
+
+    print(game.board.MainBoard)
 
     # class Square:
     #     def __init__(self):
 
-    #         #Set text value (default '.', otherwise
+    #         #Set text value (default ".", otherwise
     #         # contains the players ID
-    #         self.contains = '.'
+    #         self.contains = "."
 
     #         self.up = None
     #         self.right = None
@@ -40,7 +114,7 @@ if __name__ == '__main__':
     #         self.contains = c
 
     #     def isEmpty(self):
-    #         return self.contains == '.'
+    #         return self.contains == "."
 
     # class Board:
     #     def __init__(self, size=4):
@@ -62,7 +136,7 @@ if __name__ == '__main__':
     #             if row[idx].isEmpty():
     #                 return idx
 
-    #     def dropTile(self, idx, player='R'):
+    #     def dropTile(self, idx, player="R"):
     #         #If column is full, return false
     #         if self.getTop(idx) == self.SIZE:
     #             return False
