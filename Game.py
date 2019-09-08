@@ -65,6 +65,7 @@ class Board:
         # Initialize M-1 Dimensional matrix for keeping track of placed pieces
         self.topBoard = np.full(self.topShape, N - 1, dtype=int)
 
+        #This makes my printBoard statement work better
         self.SIZE = N
 
     def drop(self, loc, player):
@@ -84,6 +85,10 @@ class Board:
         # raise NotImplemented("Still working on this. <3")
 
     def draw(self):
+        '''
+        Draws a pretty version of the board. Note that the board is flipped
+        when printed to account for the fact that gravity is in fact a thing.
+        '''
         #Indent by 1 tab length
         print("\t", end="")
 
@@ -109,6 +114,7 @@ def setup(CLI=True):
     if not CLI:
         return Game(numPlayers=2, goal=4, N=8, M=2)
 
+    #Get number of players, must be 2 or more
     while True:
         try:
             players = int(input("How many players?\n"))
@@ -120,6 +126,7 @@ def setup(CLI=True):
             continue
         break
 
+    #Get size of board, must be 2 or more.
     while True:
         try:
             n = int(input("Input the size?\n"))
@@ -131,6 +138,8 @@ def setup(CLI=True):
             continue
         break
 
+    #Get number of dimensions
+    #Must be between 2 and 32
     while True:
         try:
             m = int(input("Input the number of dimensions?\n"))
@@ -138,9 +147,11 @@ def setup(CLI=True):
             print("Invalid input")
             continue
         if m <= 1 or m > 32:
-            print("Value must be between 1 and 33")
+            #Double check me on this but I think that's right
+            print("Value must be in the range 2<=x<=32")
             continue
         break
+
 
     while True:
         try:
@@ -148,6 +159,8 @@ def setup(CLI=True):
         except ValueError:
             print("Invalid input")
             continue
+        #If number needed is greater than size of board, error. 
+        #Number to goal must be 2 or more.
         if goal <= 1 or goal > n:
             print("Value must be between 1 and N ({0})".format(n))
             continue
