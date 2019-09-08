@@ -65,12 +65,14 @@ class Board:
         # Initialize M-1 Dimensional matrix for keeping track of placed pieces
         self.topBoard = np.full(self.topShape, N - 1, dtype=int)
 
+        self.SIZE = N
+
     def drop(self, loc, player):
         check = int(self.topBoard[loc])
         print(check)
         if check != 0:
             loc.insert(0, check)
-            print(loc)
+            print("Location -->{}<--".format(loc))
             np.put(self.mainBoard, loc, player.playerIcon)
             check -= 1
             print("Dropping!")
@@ -82,7 +84,23 @@ class Board:
         # raise NotImplemented("Still working on this. <3")
 
     def draw(self):
-        print(self.mainBoard)
+        #Indent by 1 tab length
+        print("\t", end="")
+
+        #Print the column numbers as a header
+        print(*[x for x in range(self.SIZE)], sep="\t", end="\n")
+
+        #Indent by 1 tab length
+        print("\t", end="")
+
+        #Print a row of dashes for separation
+        print("-" * (self.SIZE * 7+2))
+
+        for rowidx, row in enumerate(np.flipud(self.mainBoard)):
+            print("{}|\t".format(rowidx), end="")
+            for tile in row:
+                print(tile, end="\t")
+            print("\n |")
         # raise NotImplemented("Still working on this. <3")
 
 
@@ -143,7 +161,7 @@ if __name__ == "__main__":
 
     game = setup(CLI=False)
 
-    print(game.board.mainBoard)
+    game.board.draw()
 
     game.run()
 
